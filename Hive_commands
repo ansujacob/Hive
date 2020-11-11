@@ -1,0 +1,144 @@
+--to create a database
+create database db_name;
+
+--show databases
+show databases;
+
+--delete databases
+drop database db_name;
+
+--to create table in hive 
+create table emp1(id int,name string,age int,salary float)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+--to change the table name
+ALTER table emp1
+RENAME to employes;
+
+--to change the column name 
+alter table table_name
+change old_colname new_colname datatype;
+
+--to change the datatype
+alter table employes
+change salary salary double;
+
+--to add a new column to the table
+alter table employes add columns (address string);
+ 
+--to add multiple columns to the table
+alter table employes add columns (email string,phone int);
+
+--to add a column at a particular position using AFTER
+alter table employes change phone phone int after age;
+
+--to add a new colum to the desired postion, here we cannot use AFTER command after ADD so we have to do it in two steps
+alter table employes add columns (last_name string);
+alter table employes change last_name last_name string after first_name;
+
+--to change the postion of a column to first
+alter table employes change salary salary double first;
+
+--to delete the columns, here we use REPLACE. So only selected columns will retain and rest of the columns will be deleted.
+alter table employes replace columns(employee_id int,first_name string,age int,email string,last_name string);
+
+--to load data from LOCAL to the table created in HIVE
+load data local inpath 'local_path' into table table_name;
+
+--to load data from hdfs to the table created in HIVE
+load data inpath 'hdfs_path' into table table_name;
+
+--to create a External table to prevent data loss when loading data from hdfs
+create external table emp1(id int,name string,age int,salary float)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+--hive commands for analysing operations 
+--to select only the required columns, its similar to FOREACH in pig
+select id,name,sal from hivesamp;
+
+--view - its a virtual table 
+create view view_name as select a,b,c from table_name;
+
+--to use a where condition, its simliar to FILTER in pig
+select * from hivessamp where id=1205
+=,<,>,<=,>=,!=
+--logical operator
+AND OR
+
+-- to order asc/desc
+select * from table_name order by column_name;
+select * from table_name order by column_name desc;
+
+--when we have to use 'where' and 'order by' the precedence is as follows
+select id, name, dept from table_name
+where id>1203
+order by dept asc;
+
+--DISTINCT oprator 
+select distinct * from table_name;
+
+--how to remove duplicates using a GROUP condition, eg a table has 4 colums 
+select c1,c2,c3,c4 from table_name group by c1,c2,c3,c4;
+--here it will remove the duplicates 
+
+--LIMIT Operator
+select * from table-name LIMIT 2;
+
+--to find the highest and lowest salary person from hivesamp file;
+select * from hivesamp order by sal desc limit 1; --highest
+select * from hivesamp order by sal limit 1; --lowest
+
+--COUNT operator
+select dept,COUNT(dept) from table_name group  by Dept;
+
+--COUNT operator and ORDER operator
+select dept,COUNT(dept) as r1 from table_name group  by Dept order by r1;
+select dept,COUNT(dept) from table_name group  by Dept order by dept;
+
+--to find the row count of a table
+select COUNT(*) from table_name;
+
+--to find the SUM
+select id,SUM(sal)
+
+--JOIN operator
+1. INNER join 
+select t1.col1,t1,col2,t2.col1
+from table1 t1 join table2 t2
+ON (t1.id=t2.id)
+
+2.LEFT OUTER JOIN -here all the rows in the left table will be present in the result and if contion is satisfied the row is retired else the result populates to NULL
+select c.c_id,c.c_name,o.o_date,o.o_amt 
+from custom c left outer join order o 
+ON c.c_id=o.o_cusid;
+
+Left outer join returns all the values from LEFT table plus the actual value from right table if condtion satisfy or NULL value incase the case the condition does not satisfy
+
+3.RIGHT OUTER JOIN
+Right outer join returns all the values from right table plus the actual value from left table if condtion satisfy or NULL value incase the case the condition does not satisfy
+select c.c_id,c.c_name,o.o_amt,o.o_date 
+from custom c right outer join order o 
+ON (c.c_id=o.o_cusid);
+
+4.FULL OUTER JOIN
+It will get all the rows from right and left table plus the rows which are matched and rest it will be NULL values. It can be used to find the ROWCOUNT of both the tables together.
+
+select c.*,o.* 
+from custom c full outer join order o 
+ON (c.c_id=o.o_cusid);
+
+
+to remove the header when we load a file
+--------------------------------------------
+create table table_name(schema)
+row format delimited
+terminated by ','
+stored as textfile
+Tblproperties("skip.header.line.count"="1")
+
+here count will determine the number of rows which needs to be skipped from top
+
