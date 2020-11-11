@@ -1,0 +1,94 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh18000\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+SQOOP COMMANDS:\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+1. To import student table from Mysql to hadoop where luminar is the parent directory created:\
+sqoop import --connect jdbc:mysql:localhost/luminar --username root --password cloudera student -m 1;\
+\
+2.To import staff table from Myssql to hdfs to a target directory:\
+sqoop import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table staff --m 1 --target-dir /Luminar/staff\
+\
+To import all the tables present in SQL database to hdfs\
+sqoop import-all-tables --connect jdbc:mysql://localhost/luminar --username root --password cloudera --m 1 \
+\
+Subset of Datas\
+-------------------\
+here we can retieve data as per a given condition : \
+\
+<given a int conditon>\
+sqoop import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table student --where "id>1" --m 1 --target-dir /Hello/student1\
+\
+<given a String conditon>\
+sqoop import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table course --where "course_name='Java'" --m 1 --target-dir /Hello/course2\
+\
+<given an condtional operator>\
+sqoop import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table staff --where "staff_name='Jack' OR staff_id=1" --m 1 --target-dir /Hello/staff2\
+\
+To import all the tables to a particular directory\
+sqoop import-all-tables --connect jdbc:mysql://localhost/luminar --username root --password cloudera --m 1 --warehouse-dir /Hello\
+\
+Exlude import of certain tables : \
+-------------------------------------\
+<to iexcliude a single table >\
+sqoop import-all-tables --connect jdbc:mysql://localhost/luminar --username root --password cloudera --m 1 --warehouse-dir /Hello/exc --exclude-tables staff\
+\
+<to exlude multiple tables>\
+sqoop import-all-tables --connect jdbc:mysql://localhost/luminar --username root --password cloudera --m 1 --warehouse-dir /Hello/exc --exclude-tables staff,course\
+\
+\
+To Export a txt file from hadoop to Mysql:\
+-----------------------------------------\
+Create a table as per the output generated in hdfs. table need to be in mysql\
+then use the sqoop command to export the text file in to the created table \
+\
+sqoop export --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table sample1 --export-dir /test/sample1.txt\
+\
+Increment-- to append the columns which are newly added \
+--------------------------------\
+sqoop import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table staff --m 1 --target-dir /Hello/staff --incremental append --check-column staff_id --last-value 2\
+\
+here col_name will the the int valued column in the table\
+number will be the point from which the newly added row\
+ie the file already had 2rows and we need to add further rows\
+Here the target dir has to be same as the previous directory.\
+Here 2 partfiles will be there one with the older contents and the other with the newly added rows.\
+\
+Sqoop Job\
+---------------\
+If we create a job we can reuse the query n times. \
+ie if we need to import table staff n times we can create a job so that we can just execute the  job\
+\
+--creation of job <import table>\
+sqoop job --create myjob1 -- import --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table course --m 1 --target-dir /Hello/course_job\
+\
+--list a job\
+sqoop job --list\
+\
+--execution of job\
+sqoop job --exec job_name\
+\
+--creation of job <export table>\
+sqoop job --create myjob2 -- export --connect jdbc:mysql://localhost/luminar --username root --password cloudera --table course_op --export-dir /Hello/course_job\
+\
+so here we have created a table course_op in mysql\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+}
